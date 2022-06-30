@@ -1,0 +1,179 @@
+---
+# Enable verbose mode (print DEBUG log messages)
+verbose: true
+
+# Should the bot endlessly looop through the URLs?
+# Between each loop it waits for <sleeping_time> seconds.
+# Note that Ebay will (temporarily) block your IP if you
+# poll too often - don't lower this below 600 seconds if you
+# are crawling Ebay.
+loop:
+    active: yes
+    sleeping_time: 120
+
+# Location of the Database to store already seen offerings
+# Defaults to the current directory
+#database_location: /path/to/database
+
+# List the URLs containing your filter properties below.
+# Currently supported services: www.immobilienscout24.de,
+# www.immowelt.de, www.wg-gesucht.de, and www.ebay-kleinanzeigen.de.
+# List the URLs in the following format:
+# urls:
+# 	- https://www.immobilienscout24.de/Suche/...
+# 	- https://www.wg-gesucht.de/...
+urls:
+        - https://www.immobilienscout24.de/Suche/shape/wohnung-mieten?shape=eXJoX0lnaWZwQW5Ab0F_ekN3YUl3T2t8QG9LfWBAcUhfUH5HYUhiWnFkQGJJe1N_T3doQGRUfX5AeFBfX0F8T2lnQXRccX1DZkN5Wm5BbVk-Y2NDYURjakFxQXtTcUFhUWNJfWVAY0RjUXdFYVFpSGlOZUlnTmVwQGtgQV9bc11xTG9LZV9AZ1V9T3dIaVN3SHFoQGFRe1VrR19rQHtMZVR5QXNjQT9fdkBuS2lTakdjZUB2SGVGfkFqRXlEa0JlQ19MYE1nTHhFfVpiUXVWfld9T3RWc3JAYHFBY0lgUXVhQHBkQWVOamBAX0p2YUBlSXBkQHtPYmpBYURkXG9ScH1Cb0F_Xj9uZEVYZlVqQmJqQHhFbHlAekRwZEB0QHRPYkRqWWpCcEt0S3BddlByXX5Ucl14VX5XfmpAdmFAaEhkQ3JnQGpHek9qQHhQeEFsb0E-RXBBR2pCR2pCR2xCSHJBSHJBUmhBTFxYQnBAaEJsTG5OdkBwSXZBcEt8QWBMdkJkTHpCcEpyQn5JakJwSXJCbkpmQ2hMfkNsTGJEZEt_Q2BJbER8RmBFeEV2RWpGcEZuRnhGcEZwRm5GaEVsRXpEbkRmRWZDYEZ8Qn5GYERmSHREYkhwQn5GckBmRmxAdEVoQGZGbEB0RnBAfkZwQGBHVg..&price=-550.0&livingspace=-55.0&exclusioncriteria=swapflat&pricetype=calculatedtotalrent&sorting=2&enteredFrom=result_list
+#        
+        - https://www.ebay-kleinanzeigen.de/s-wohnung-mieten/friedrichshain/anzeige:angebote/preis::450/c203l3350r5+wohnung_mieten.qm_d:30%2C+wohnung_mieten.swap_s:nein
+#       
+        - https://www.immonet.de/immobiliensuche/sel.do?fromarea=35.0&city=87372&latitude=52.50375742551077&parentcat=-1&suchart=2&marketingtype=2&toprice=550.0&district=7605&radius=5&listsize=26&objecttype=1&longitude=13.42821778066444&pageoffset=1&sortby=19
+#
+        - https://www.wg-gesucht.de/1-zimmer-wohnungen-und-wohnungen-in-Berlin.8.1+2.1.0.html?csrf_token=b0ffab5c8ca9ff30011a414234fa5e68ddbdb335&offer_filter=1&city_id=8&noDeact=1&dFr=1656633600&categories%5B%5D=1&categories%5B%5D=2&rent_types%5B%5D=2&sMin=30&rMax=560
+#
+# Define filters to exclude flats that don't meet your critera.
+# Supported filters include 'max_rooms', 'min_rooms', 'max_size', 'min_size',
+#   'max_price', 'min_price', and 'excluded_titles'.
+#
+# 'excluded_titles' takes a list of regex patterns that match against
+# the title of the flat. Any matching titles will be excluded.
+# More to Python regex here: https://docs.python.org/3/library/re.html
+#
+# Example:
+# filters:
+#   excluded_titles:
+#     - "wg"
+#     - "zwischenmiete"
+#   min_price: 700
+#   max_price: 1000
+#   min_size: 50
+#   max_size: 80
+#   max_price_per_square: 1000
+filters:
+
+# There are often city districts in the address which
+# Google Maps does not like. Use this blacklist to remove
+# districts from the search.
+blacklist:
+  - Innenstadt
+
+# If an expose includes an address, the bot is capable of
+# displaying the distance and time to travel (duration) to
+# some configured other addresses, for specific kinds of
+# travel.
+#  
+# Available kinds of travel ('gm_id') can be found in the
+# Google Maps API documentation, but basically there are:
+# 	- "bicycling"
+#	- "transit" (public transport)
+#	- "driving"
+#   - "walking"
+# 
+# The example configuration below includes a place for
+# "John", located at the main train station of munich.
+# Two kinds of travel (bicycle and transit) are requested,
+# each with a different label. Furthermore a place for
+# "Jane" is included, located at the given destination and
+# with the same kinds of travel.
+durations:
+    - name: John
+      destination: S Poelchaustraße, Berlin
+      modes: 
+          - gm_id: transit
+            title: "Öff."
+          - gm_id: bicycling
+            title: "Rad"
+
+# Multiline message (yes, the | is supposed to be there), 
+# to format the message received from the Telegram bot. 
+# 
+# Available placeholders:
+# 	- {title}: The title of the expose
+#	- {rooms}: Number of rooms
+#	- {price}: Price for the flat
+# 	- {durations}: Durations calculated by GMaps, see above
+#	- {url}: URL to the expose
+message: |
+    {title}
+    Zimmer: {rooms}
+    Größe: {size}
+    Preis: {price}
+    Ort: {address}
+
+    {url}
+
+# Calculating durations requires access to the Google Maps API. 
+# Below you can configure the URL to access the API, with placeholders.
+# The URL should most probably just kept like that. 
+# To use the Google Maps API, an API key is required. You can obtain one
+# without costs from the Google App Console (just google for it).
+# Additionally, to enable the API calls in the code, set the 'enable' key to True
+google_maps_api:
+    key: YOUR_API_KEY
+    url: https://maps.googleapis.com/maps/api/distancematrix/json?origins={origin}&destinations={dest}&mode={mode}&sensor=true&key={key}&arrival_time={arrival}
+    enable: False
+
+# If you are planning to scrape immoscout24.de, the bot will need 
+# to circumvent the sites captcha protection by using a captcha 
+# solving service. Register at either imagetypers or 2captcha 
+# (the former is prefered), desposit some funds, uncomment the 
+# corresponding lines below and replace your API key/token.
+# you will also have to install a Chrome Web Driver and write below 
+# the executable path, the driver_arguments can be left as is.
+captcha:
+#       imagetypers:
+#             token: alskdjaskldjfklj
+       2captcha:
+             api_key: bea830bfd0afd03347fafafcddfde72c
+       driver_path: /usr/bin/chromedriver
+       driver_arguments:
+         - "--headless"
+
+# You can select whether to be notified by telegram or via a mattermost
+# webhook. For all notifiers selected here a configuration must be provided
+# below.
+# notifiers:
+#   - telegram
+#   - mattermost
+notifiers:
+    - telegram
+
+# Sending messages using Telegram requires a Telegram Bot configured. 
+# Telegram.org offers a good documentation about how to create a bot.
+# Once you read it, will make sense. Still: bot_token should hold the
+# access token of your bot and receiver_ids should list the client ids
+# of receivers. Note that those receivers are required to already have
+# started a conversation with your bot. 
+#
+telegram:
+   bot_token: 5405603934:AAGAEAxdIRDhOjUZ6_lmpd5NdwHoxDExpYw
+   receiver_ids:
+       - 932154694
+#       - 67890....
+
+# Sending messages via mattermost requires a webhook url provided by a
+# mattermost server. You can find a description how to set up a webhook with
+# the official mattermost documentation:
+# https://docs.mattermost.com/developer/webhooks-incoming.html
+# mattermost:
+#   webhook_url: https://mattermost.example.com/signup_user_complete/?id=abcdef12356
+
+# If you are running the web interface, you can configure Login with Telegram support
+# Follow the instructions here to register your domain with the Telegram bot:
+# https://core.telegram.org/widgets/login
+#
+# website:
+#    bot_name: bot_name_xxx
+#    domain: flathunter.example.com
+#    session_key: SomeSecretValue
+#    listen:
+#      host: 127.0.0.1
+#      port: 8080
+
+# If you are deploying to google cloud,
+# uncomment this and set it to your project id. More info in the readme.
+# google_cloud_project_id: my-flathunters-project-id
+
+# For websites like idealista.it, there are anti-crawler measures that can be
+# circumvented using proxies.
+use_proxy_list: False
